@@ -7,14 +7,6 @@ let statusText = document.getElementById('statusText')
 const O = "O";
 const X = "X";
 
-// I'll need placeholders for each cell, as well as winCondiitions stated
-for (let i = 0; i < cells.length; i++) {
-    cells[i].addEventListener('click', cellClicked);
-}
-
-// What actions can a user can take when playing the game?
-// 1. A player can select a box 2. A player can end the game either through a win or a draw 3. A player can press the button to restart the game
-
 let winConditions = [
     [0, 1, 2],
     [3, 4, 5],
@@ -30,31 +22,86 @@ let options = ["", "", "", "", "", "", "", "", ""];
 let currentPlayer = "X";
 let running = false;
 
+startGame();
 
 
-// To check for the winner we have to use the winning combinations, and use that information against the textContent within the cells to tell if the player has won or not
+function startGame() {
+    for (let i = 0; i < cells.length; i++) {
+        cells[i].addEventListener('click', cellClicked);
+    }
+    restartButton.addEventListener('click', restartGame);
+    statusText.textContent = `${currentPlayer}'s turn`;
+    running = true;
+    
+}
 function checkWinner() {
+    let setWon = false;
+    for (let j = 0; j < winConditions.length; j++) {
+        let condition = winConditions[j];
+        let a = options[condition[0]];
+        let b = options[condition[1]];
+        let c = options[condition[2]];
 
+        if (a === "" || b === "" || c === "") {
+            continue;
+        } 
+        if (a === b && b === c) {
+            setWon = true;
+            break;  
+        }
+    }
+    if(setWon){
+        statusText.textContent = `${currentPlayer} wins!`
+        running = false;
+        return;
+
+    } else if(!options.includes("")) {
+        statusText.textContent = "You both lose!"
+        running = false;
+        return;
+    }
+    else{
+        changePlayer();
+    }
 }
 
+
+
 function endgame(draw) {
-    if(draw) {
-        statusText.innerText = "You both lose!"
+    if (draw) {
+        statusText.textContent = "You both lose!"
     } else {
-        statusText.innerText = currentPlayer + 'Player wins!'
+        statusText.textContent = `${currentPlayer} wins!`
     }
 }
 
 function restartGame() {
+    running = true;
+    currentPlayer = "X"
+    options = ["", "", "", "", "", "", "", "", ""];
+    statusText.textContent = `${currentPlayer}s turn`;
+    cells.forEach(cell => cell.textContent = "");
+
 
 }
-function cellClicked () {
-    // I also want to apply functionality so that once I click on a cell during the game, I won't be able to click on the cell again if it's already filled
-    id = event.target.textContent;
-    if(currentPlayer === O)
-    currentPlayer = X
+function cellClicked(event) {
+
+    let cellText = event.target.textContent;
+
+    if (cellText !== "") return;
+
+    event.target.textContent = currentPlayer;
+
+    checkWinner();
+
+}
+
+
+function changePlayer() {
+    if (currentPlayer === "X")
+        currentPlayer = "0"
     else {
-        currentPlayer = O
+        currentPlayer = "X"
     };
-    
-} 
+    statusText.textContent = `${currentPlayer}'s turn`;
+}
