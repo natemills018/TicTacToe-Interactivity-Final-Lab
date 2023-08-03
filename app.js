@@ -38,14 +38,14 @@ function checkWinner() {
     let setWon = false;
     for (let j = 0; j < winConditions.length; j++) {
         let condition = winConditions[j];
-        let a = options[condition[0]];
-        let b = options[condition[1]];
-        let c = options[condition[2]];
+        let cella = options[condition[0]];
+        let cellb = options[condition[1]];
+        let cellc = options[condition[2]];
 
-        if (a === "" || b === "" || c === "") {
+        if (cella === "" || cellb === "" || cellc === "") {
             continue;
         } 
-        if (a === b && b === c) {
+        if ((cella === cellb) && (cellb === cellc)) {
             setWon = true;
             break;  
         }
@@ -67,14 +67,6 @@ function checkWinner() {
 
 
 
-function endgame(draw) {
-    if (draw) {
-        statusText.textContent = "You both lose!"
-    } else {
-        statusText.textContent = `${currentPlayer} wins!`
-    }
-}
-
 function restartGame() {
     running = true;
     currentPlayer = "X"
@@ -84,22 +76,32 @@ function restartGame() {
 
 
 }
-function cellClicked(event) {
+function cellClicked() {
+    
+    let cellIndex = this.getAttribute("cellIndex");
 
-    let cellText = event.target.textContent;
+    if (options[cellIndex] != "" || !running){
+        return;
+    }
 
-    if (cellText !== "") return;
-
-    event.target.textContent = currentPlayer;
+    updateCell(this, cellIndex);
 
     checkWinner();
 
 }
 
+function updateCell(cell, index){
+    options[index] = currentPlayer;
+    cell.textContent = currentPlayer;
+}
+
+// I need something that keeps the cells index once a cell is clicked
+
+
 
 function changePlayer() {
     if (currentPlayer === "X")
-        currentPlayer = "0"
+        currentPlayer = "O"
     else {
         currentPlayer = "X"
     };
